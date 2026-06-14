@@ -12,10 +12,10 @@ export default function LoginPage() {
 
   async function login() {
     setLoading(true); setError(null);
-    const { error } = await supabaseBrowser.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) { setError(error.message); return; }
-    router.push("/dashboard");
+    const { data, error } = await supabaseBrowser.auth.signInWithPassword({ email, password });
+    if (error) { setLoading(false); setError(error.message); return; }
+    const { data: prof } = await supabaseBrowser.from("profiles").select("role").eq("id", data.user.id).single();
+    router.push(prof?.role === "doctor" ? "/doctor" : "/dashboard");
   }
 
   return (

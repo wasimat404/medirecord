@@ -63,6 +63,10 @@ export default function PatientSignup() {
         <option value="or">Odia</option>
         <option value="as">Assamese</option>
         <option value="kn">Kannada</option>
+        <option value="gu">Gujarati</option>
+        <option value="ml">Malayalam</option>
+        <option value="pa">Punjabi</option>
+        <option value="ur">Urdu</option>
       </select>
       {error && <p style={{ color: "#c00", marginBottom: 14 }}>{error}</p>}
       <button className="btn" onClick={submit} disabled={loading} style={{ width: "100%" }}>

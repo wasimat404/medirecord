@@ -1,18 +1,48 @@
-import Link from "next/link";
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function DoctorSignup() {
+  const router = useRouter();
+  const [f, setF] = useState<any>({ role: "doctor" });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const set = (k: string, v: any) => setF((p: any) => ({ ...p, [k]: v }));
+
+  async function submit() {
+    setLoading(true); setError(null);
+    const res = await fetch("/api/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(f),
+    });
+    const data = await res.json();
+    setLoading(false);
+    if (!res.ok) { setError(data.error || "Signup failed"); return; }
+    router.push("/login");
+  }
+
   return (
-    <main style={{ maxWidth: 460, margin: "0 auto", padding: "4rem 1.25rem", textAlign: "center", fontFamily: "ui-sans-serif, system-ui, sans-serif" }}>
-      <div className="fade-up">
-        <div style={{ width: 64, height: 64, borderRadius: "50%", background: "#E6F1FB", display: "inline-flex", alignItems: "center", justifyContent: "center", marginBottom: 18 }}>
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#185FA5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v4M8 6a4 4 0 0 0 8 0V2" /><path d="M6 6v4a6 6 0 0 0 12 0V6" /><circle cx="20" cy="14" r="2" /><path d="M20 16v1a6 6 0 0 1-12 0v-1" /></svg>
-        </div>
-        <h1 style={{ fontSize: 26, fontWeight: 600, marginBottom: 10 }}>Doctor access is coming soon</h1>
-        <p style={{ color: "var(--ink-soft)", fontSize: 15, lineHeight: 1.6, marginBottom: 28 }}>
-          We&apos;re building secure tools for doctors to view a patient&apos;s history using their unique ID — with the patient&apos;s permission. Check back shortly.
-        </p>
-        <Link href="/signup" style={{ color: "var(--teal-dark)", fontWeight: 600, textDecoration: "none" }}>&larr; Back</Link>
-      </div>
+    <main style={{ maxWidth: 440, margin: "0 auto", padding: "3rem 1.25rem", fontFamily: "ui-sans-serif, system-ui, sans-serif" }}>
+      <h1 style={{ fontSize: 24, fontWeight: 600, marginBottom: 4 }}>Doctor sign up</h1>
+      <p style={{ color: "var(--ink-soft)", marginBottom: 24 }}>Access patient histories with their permission.</p>
+
+      <label className="label">Full name</label>
+      <input className="field" value={f.full_name || ""} onChange={(e) => set("full_name", e.target.value)} placeholder="Dr. ..." style={{ marginBottom: 14 }} />
+      <label className="label">Specialty</label>
+      <input className="field" value={f.specialty || ""} onChange={(e) => set("specialty", e.target.value)} placeholder="e.g. General physician" style={{ marginBottom: 14 }} />
+      <label className="label">Email</label>
+      <input className="field" type="email" value={f.email || ""} onChange={(e) => set("email", e.target.value)} style={{ marginBottom: 14 }} />
+      <label className="label">Password</label>
+      <input className="field" type="password" value={f.password || ""} onChange={(e) => set("password", e.target.value)} style={{ marginBottom: 20 }} />
+
+      {error && <p style={{ color: "#c00", marginBottom: 14 }}>{error}</p>}
+      <button className="btn" onClick={submit} disabled={loading} style={{ width: "100%" }}>
+        {loading ? "Creating account..." : "Create doctor account"}
+      </button>
+      <p style={{ textAlign: "center", marginTop: 16, fontSize: 14, color: "var(--ink-soft)" }}>
+        Already have an account? <a href="/login" style={{ color: "var(--teal-dark)", fontWeight: 600 }}>Log in</a>
+      </p>
     </main>
   );
 }
