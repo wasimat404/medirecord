@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: medirecord
+  labels:
+    app: medirecord
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: medirecord
+  template:
+    metadata:
+      labels:
+        app: medirecord
+    spec:
+      containers:
+        - name: medirecord
+          image: ghcr.io/wasimat404/medirecord:latest
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: medirecord-env
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
