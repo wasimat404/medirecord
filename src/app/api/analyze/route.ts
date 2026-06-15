@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { model, EXTRACTION_PROMPT } from "@/lib/gemini";
+import { getModel, EXTRACTION_PROMPT } from "@/lib/gemini";
 import { supabaseServer } from "@/lib/supabaseServer";
 
 export async function POST(req: NextRequest) {
@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     if (!file) return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
 
     const base64 = Buffer.from(await file.arrayBuffer()).toString("base64");
-    const result = await model.generateContent([EXTRACTION_PROMPT, { inlineData: { mimeType: file.type, data: base64 } }]);
+    const result = await getModel().generateContent([EXTRACTION_PROMPT, { inlineData: { mimeType: file.type, data: base64 } }]);
     const raw = result.response.text().trim().replace(/^```json/i, "").replace(/^```/, "").replace(/```$/, "").trim();
     const parsed = JSON.parse(raw);
 
