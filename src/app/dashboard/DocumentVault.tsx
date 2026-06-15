@@ -1,3 +1,4 @@
+import type { RecordRow } from "@/lib/types";
 const INK = "#22332C", MUTE = "#6B7C74";
 
 const cats = [
@@ -13,14 +14,14 @@ const Icon = ({ kind, color }: { kind: string; color: string }) => {
   return (<svg {...common}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /><line x1="8" y1="13" x2="16" y2="13" /><line x1="8" y1="17" x2="13" y2="17" /></svg>);
 };
 
-export default function DocumentVault({ records }: { records: any[] }) {
+export default function DocumentVault({ records }: { records: RecordRow[] }) {
   const recs = records || [];
   return (
     <div style={{ marginBottom: 18 }}>
       <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, color: MUTE, textTransform: "uppercase", margin: "0 0 12px" }}>Your document vault</p>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12 }}>
         {cats.map((c) => {
-          const count = recs.filter((r: any) => c.match(r.category || "")).length;
+          const count = recs.filter((r: RecordRow) => c.match(r.category || "")).length;
           return (
             <div key={c.key} className="pcard" style={{ background: c.tint, borderRadius: 18, padding: "18px 16px", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 11 }}>
               <span style={{ width: 46, height: 46, borderRadius: 13, background: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,.04)" }}>

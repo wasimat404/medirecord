@@ -4,10 +4,10 @@ import { useRouter } from "next/navigation";
 
 export default function DoctorSignup() {
   const router = useRouter();
-  const [f, setF] = useState<any>({ role: "doctor" });
+  const [f, setF] = useState<Record<string, string>>({ role: "doctor" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const set = (k: string, v: any) => setF((p: any) => ({ ...p, [k]: v }));
+  const set = (k: string, v: string) => setF((p: Record<string, string>) => ({ ...p, [k]: v }));
 
   async function submit() {
     setLoading(true); setError(null);

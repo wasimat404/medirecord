@@ -1,5 +1,7 @@
 "use client";
 import { useState, useRef } from "react";
+import type { MetricPoint } from "@/lib/types";
+import type { Metric } from "@/lib/health";
 
 const GREEN = "#0B5C43", BLUE = "#185FA5", BAND = "#DCEDE5", GRID = "#EAF0ED";
 
@@ -14,14 +16,14 @@ function useHover(n: number) {
   return { hi, ref, move, clear: () => setHi(null) };
 }
 
-function Single({ m }: any) {
+function Single({ m }: { m: Metric }) {
   const n = m.points.length;
   const W = 320, H = 128, P = 16;
   const span = (m.max - m.min) || 1;
   const Y = (v: number) => H - P - ((v - m.min) / span) * (H - 2 * P);
   const X = (i: number) => P + (i / (n - 1)) * (W - 2 * P);
-  const pts = m.points.map((p: any, i: number) => [X(i), Y(p.v)]);
-  const line = pts.map((p: any) => p.join(",")).join(" ");
+  const pts = m.points.map((p: MetricPoint, i: number) => [X(i), Y(p.v!)]);
+  const line = pts.map((p: number[]) => p.join(",")).join(" ");
   const area = `${P},${H - P} ` + line + ` ${W - P},${H - P}`;
   const bT = m.hi != null ? Y(m.hi) : null, bB = m.lo != null ? Y(m.lo) : null;
   const { hi, ref, move, clear } = useHover(n);
@@ -35,14 +37,14 @@ function Single({ m }: any) {
         {[0.33, 0.66].map((t) => <line key={t} x1={P} x2={W - P} y1={P + t * (H - 2 * P)} y2={P + t * (H - 2 * P)} stroke={GRID} strokeWidth="1" />)}
         <polygon points={area} fill={GREEN} opacity="0.06" />
         <polyline className="cdraw" points={line} fill="none" stroke={GREEN} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        {pts.map((p: any, i: number) => <circle key={i} cx={p[0]} cy={p[1]} r={i === n - 1 ? 3.5 : 2} fill={i === n - 1 ? GREEN : "#fff"} stroke={GREEN} strokeWidth="1.3" />)}
+        {pts.map((p: number[], i: number) => <circle key={i} cx={p[0]} cy={p[1]} r={i === n - 1 ? 3.5 : 2} fill={i === n - 1 ? GREEN : "#fff"} stroke={GREEN} strokeWidth="1.3" />)}
       </svg>
       {hi != null && (
         <>
           <div style={{ position: "absolute", top: 6, bottom: 0, left: `${(X(hi) / W) * 100}%`, width: 1, background: "rgba(11,92,67,.22)", pointerEvents: "none" }} />
-          <div style={{ position: "absolute", left: `${(X(hi) / W) * 100}%`, top: `calc(6px + ${(Y(hp.v) / H) * 100}% * (128/134))`, width: 9, height: 9, borderRadius: "50%", background: GREEN, border: "2px solid #fff", transform: "translate(-50%,-50%)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", left: `${(X(hi) / W) * 100}%`, top: `calc(6px + ${(Y(hp!.v!) / H) * 100}% * (128/134))`, width: 9, height: 9, borderRadius: "50%", background: GREEN, border: "2px solid #fff", transform: "translate(-50%,-50%)", pointerEvents: "none" }} />
           <div style={{ position: "absolute", left: `${(X(hi) / W) * 100}%`, top: 0, transform: "translate(-50%,-2px)", background: "#16241E", color: "#fff", fontSize: 11, padding: "3px 8px", borderRadius: 6, whiteSpace: "nowrap", pointerEvents: "none", zIndex: 3 }}>
-            {hp.v}{m.unit ? ` ${m.unit}` : ""} · {hp.label}
+            {hp!.v}{m.unit ? ` ${m.unit}` : ""} · {hp!.label}
           </div>
         </>
       )}
@@ -50,16 +52,16 @@ function Single({ m }: any) {
   );
 }
 
-function Dual({ m }: any) {
+function Dual({ m }: { m: Metric }) {
   const n = m.points.length;
   const W = 320, H = 128, P = 16;
   const span = (m.max - m.min) || 1;
   const Y = (v: number) => H - P - ((v - m.min) / span) * (H - 2 * P);
   const X = (i: number) => P + (i / (n - 1)) * (W - 2 * P);
-  const sys = m.points.map((p: any, i: number) => [X(i), Y(p.sys)]);
-  const dia = m.points.map((p: any, i: number) => [X(i), Y(p.dia)]);
-  const sl = sys.map((p: any) => p.join(",")).join(" ");
-  const dl = dia.map((p: any) => p.join(",")).join(" ");
+  const sys = m.points.map((p: MetricPoint, i: number) => [X(i), Y(p.sys!)]);
+  const dia = m.points.map((p: MetricPoint, i: number) => [X(i), Y(p.dia!)]);
+  const sl = sys.map((p: number[]) => p.join(",")).join(" ");
+  const dl = dia.map((p: number[]) => p.join(",")).join(" ");
   const { hi, ref, move, clear } = useHover(n);
   const hp = hi != null ? m.points[hi] : null;
 
@@ -69,14 +71,14 @@ function Dual({ m }: any) {
         {[0.33, 0.66].map((t) => <line key={t} x1={P} x2={W - P} y1={P + t * (H - 2 * P)} y2={P + t * (H - 2 * P)} stroke={GRID} strokeWidth="1" />)}
         <polyline className="cdraw" points={sl} fill="none" stroke={GREEN} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         <polyline className="cdraw" points={dl} fill="none" stroke={BLUE} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        {sys.map((p: any, i: number) => <circle key={i} cx={p[0]} cy={p[1]} r="2.4" fill={GREEN} />)}
-        {dia.map((p: any, i: number) => <circle key={i} cx={p[0]} cy={p[1]} r="2.4" fill={BLUE} />)}
+        {sys.map((p: number[], i: number) => <circle key={i} cx={p[0]} cy={p[1]} r="2.4" fill={GREEN} />)}
+        {dia.map((p: number[], i: number) => <circle key={i} cx={p[0]} cy={p[1]} r="2.4" fill={BLUE} />)}
       </svg>
       {hi != null && (
         <>
           <div style={{ position: "absolute", top: 6, bottom: 0, left: `${(X(hi) / W) * 100}%`, width: 1, background: "rgba(11,92,67,.22)", pointerEvents: "none" }} />
           <div style={{ position: "absolute", left: `${(X(hi) / W) * 100}%`, top: 0, transform: "translate(-50%,-2px)", background: "#16241E", color: "#fff", fontSize: 11, padding: "3px 8px", borderRadius: 6, whiteSpace: "nowrap", pointerEvents: "none", zIndex: 3 }}>
-            {hp.sys}/{hp.dia} mmHg · {hp.label}
+            {hp!.sys}/{hp!.dia} mmHg · {hp!.label}
           </div>
         </>
       )}
@@ -84,7 +86,7 @@ function Dual({ m }: any) {
   );
 }
 
-export default function MetricCharts({ metrics }: { metrics: any[] }) {
+export default function MetricCharts({ metrics }: { metrics: Metric[] }) {
   if (!metrics.length) return null;
   return (
     <>

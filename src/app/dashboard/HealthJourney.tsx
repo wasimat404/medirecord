@@ -1,7 +1,8 @@
+import type { RecordRow } from "@/lib/types";
 const INK = "#22332C", MUTE = "#6B7C74", LINE = "#E5EFE9";
 
-const fmtD = (s: string) => {
-  const d = new Date(s);
+const fmtD = (s?: string) => {
+  const d = new Date(s || "");
   return isNaN(d.getTime()) ? "" : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
 };
 
@@ -13,10 +14,10 @@ const EVENT: Record<string, { verb: string; color: string }> = {
   other: { verb: "Document added", color: "#6B7C74" },
 };
 
-export default function HealthJourney({ records }: { records: any[] }) {
+export default function HealthJourney({ records }: { records: RecordRow[] }) {
   const recs = (records || [])
     .slice()
-    .sort((a: any, b: any) => new Date(b.report_date || b.created_at).getTime() - new Date(a.report_date || a.created_at).getTime())
+    .sort((a: RecordRow, b: RecordRow) => new Date(b.report_date || b.created_at || "").getTime() - new Date(a.report_date || a.created_at || "").getTime())
     .slice(0, 8);
 
   return (
@@ -28,7 +29,7 @@ export default function HealthJourney({ records }: { records: any[] }) {
       ) : (
         <div style={{ position: "relative" }}>
           <div style={{ position: "absolute", left: 5, top: 5, bottom: 5, width: 2, background: "#E5EFE9" }} />
-          {recs.map((r: any, i: number) => {
+          {recs.map((r: RecordRow, i: number) => {
             const ev = EVENT[r.category as string] || EVENT.other;
             return (
               <div key={r.id ?? i} style={{ position: "relative", paddingLeft: 22, paddingBottom: i < recs.length - 1 ? 15 : 0 }}>

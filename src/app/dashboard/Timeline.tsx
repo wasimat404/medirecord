@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import type { RecordRow, DataPoint } from "@/lib/types";
 
 const catMeta: Record<string, { label: string; fg: string; soft: string }> = {
   blood_test: { label: "Lab test", fg: "#0F6E56", soft: "#DEF3EA" },
@@ -15,14 +16,14 @@ function flagStyle(flag?: string) {
   return { bg: "#F1EFE8", fg: "#6b6a64" };
 }
 
-function titleOf(r: any) {
+function titleOf(r: RecordRow) {
   const pts = r.data_points || [];
   if (pts.length === 1 && pts[0].test) return pts[0].test;
   if (pts.length > 1) {
-    const m = catMeta[r.category] || catMeta.other;
+    const m = catMeta[r.category || "other"] || catMeta.other;
     return `${m.label} · ${pts.length} readings`;
   }
-  return (catMeta[r.category] || catMeta.other).label;
+  return (catMeta[r.category || "other"] || catMeta.other).label;
 }
 
 const filters = [
@@ -33,15 +34,15 @@ const filters = [
   { key: "imaging", label: "Imaging" },
 ];
 
-export default function Timeline({ records }: { records: any[] }) {
+export default function Timeline({ records }: { records: RecordRow[] }) {
   const [filter, setFilter] = useState("all");
   const [open, setOpen] = useState<string | null>(null);
 
   const shown = records.filter((r) => filter === "all" || r.category === filter);
 
-  const groups: { label: string; items: any[] }[] = [];
+  const groups: { label: string; items: RecordRow[] }[] = [];
   for (const r of shown) {
-    const d = new Date(r.report_date || r.created_at);
+    const d = new Date(r.report_date || r.created_at || "");
     const label = isNaN(d.getTime()) ? "Undated" : d.toLocaleDateString("en-GB", { month: "long", year: "numeric", timeZone: "UTC" });
     const g = groups.find((g) => g.label === label);
     if (g) g.items.push(r);
@@ -82,14 +83,14 @@ export default function Timeline({ records }: { records: any[] }) {
 
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {g.items.map((r) => {
-              const m = catMeta[r.category] || catMeta.other;
-              const d = new Date(r.report_date || r.created_at);
+              const m = catMeta[r.category || "other"] || catMeta.other;
+              const d = new Date(r.report_date || r.created_at || "");
               const day = isNaN(d.getTime()) ? "" : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
               const pts = r.data_points || [];
               const isOpen = open === r.id;
               return (
                 <div key={r.id}
-                  onClick={() => setOpen(isOpen ? null : r.id)}
+                  onClick={() => setOpen(isOpen ? null : r.id ?? null)}
                   style={{
                     background: "#fff", borderRadius: 18, padding: "16px 18px", cursor: "pointer",
                     boxShadow: isOpen ? "0 14px 40px rgba(11,61,46,.13)" : "0 1px 4px rgba(11,61,46,.07)",
@@ -109,7 +110,7 @@ export default function Timeline({ records }: { records: any[] }) {
 
                       {pts.length > 0 && (
                         <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginTop: 10 }}>
-                          {(isOpen ? pts : pts.slice(0, 3)).map((p: any, i: number) => {
+                          {(isOpen ? pts : pts.slice(0, 3)).map((p: DataPoint, i: number) => {
                             const fs = flagStyle(p.flag);
                             return (
                               <span key={i} style={{ fontSize: 12, fontWeight: 600, background: fs.bg, color: fs.fg, padding: "4px 11px", borderRadius: 9 }}>

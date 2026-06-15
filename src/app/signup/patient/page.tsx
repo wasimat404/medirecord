@@ -4,11 +4,11 @@ import { useRouter } from "next/navigation";
 
 export default function PatientSignup() {
   const router = useRouter();
-  const [f, setF] = useState<any>({ preferred_language: "en" });
+  const [f, setF] = useState<Record<string, string>>({ preferred_language: "en" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function set(k: string, v: any) { setF((p: any) => ({ ...p, [k]: v })); }
+  function set(k: string, v: string) { setF((p: Record<string, string>) => ({ ...p, [k]: v })); }
 
   async function submit() {
     setLoading(true); setError(null);

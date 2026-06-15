@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabaseServer";
+import type { RecordRow } from "@/lib/types";
 import { translateText } from "@/lib/translate";
 import LangToggle from "./LangToggle";
 import LogoutButton from "./LogoutButton";
@@ -11,7 +12,7 @@ import HealthJourney from "./HealthJourney";
 import SmartUpload from "./SmartUpload";
 import TranslateBot from "./TranslateBot";
 
-const GREEN = "#3DA672", GREEN_DEEP = "#2E9E63", TEAL = "#1FAE94", INK = "#22332C", MUTE = "#6B7C74", LINE = "#E5EFE9";
+const GREEN_DEEP = "#2E9E63", TEAL = "#1FAE94", INK = "#22332C", MUTE = "#6B7C74", LINE = "#E5EFE9";
 
 export default async function Dashboard({ searchParams }: { searchParams: Promise<{ lang?: string }> }) {
   const { lang: forceEn } = await searchParams;
@@ -31,11 +32,11 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
   const patientLang = profile?.preferred_language || "en";
   const lang = forceEn === "en" ? "en" : patientLang;
   if (lang !== "en") {
-    await Promise.all(recs.map(async (r: any) => {
+    await Promise.all(recs.map(async (r: RecordRow) => {
       if (r.summary_en) r.summary_display = await translateText(r.summary_en, lang);
     }));
   }
-  const latest = recs.find((r: any) => r.summary_display || r.summary_en);
+  const latest = recs.find((r: RecordRow) => r.summary_display || r.summary_en);
   const latestSummary = latest ? (latest.summary_display ?? latest.summary_en) : null;
   const heroHeadline = lang !== "en"
     ? await translateText("According to your last report", lang)

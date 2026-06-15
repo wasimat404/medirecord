@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { supabaseServer } from "@/lib/supabaseServer";
+import type { Profile } from "@/lib/types";
 import LogoutButton from "../dashboard/LogoutButton";
 import LinkPatient from "./LinkPatient";
 
@@ -20,7 +21,7 @@ export default async function DoctorHome() {
     .eq("doctor_id", user.id)
     .order("created_at", { ascending: false });
 
-  const list = (grants || []).map((g: any) => g.patient).filter(Boolean);
+  const list = (grants || []).flatMap((g: { patient: Profile[] }) => g.patient).filter(Boolean);
 
   return (
     <main style={{ minHeight: "100vh", background: "#FBFCFB", fontFamily: "ui-sans-serif, system-ui, sans-serif", color: "#16241E" }}>
@@ -58,7 +59,8 @@ export default async function DoctorHome() {
         )}
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: 16 }}>
-          {list.map((p: any, i: number) => {
+          {list.map((p: Profile, i: number) => {
+          // eslint-disable-next-line react-hooks/purity -- per-request server component
             const age = p.dob ? Math.floor((Date.now() - new Date(p.dob).getTime()) / 3.156e10) : null;
             return (
               <Link key={p.id} href={`/doctor/${p.id}`} className="pcard r-in"
