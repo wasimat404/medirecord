@@ -4,25 +4,11 @@ import { supabaseServer } from "@/lib/supabaseServer";
 import PrescribeBox from "./PrescribeBox";
 import MetricCharts from "./MetricCharts";
 import DocSidebar from "../DocSidebar";
+import { buildHealth, fmtD } from "@/lib/health";
+import type { RecordRow } from "@/lib/types";
 
 const GREEN = "#0B5C43", RED = "#A3422E", AMBER = "#BA7517", MUTE = "#75857D", LINE = "#E6ECE9", BG = "#F4F7F5";
 const catLabel: Record<string, string> = { blood_test: "Lab", imaging: "Imaging", prescription: "Rx", bill: "Bill", other: "Doc" };
-
-function parseRange(s?: string) {
-  if (!s) return null; const t = String(s); const nums = t.match(/\d+\.?\d*/g)?.map(Number) ?? [];
-  if (/</.test(t) && nums.length) return { lo: null, hi: nums[0] };
-  if (/>/.test(t) && nums.length) return { lo: nums[0], hi: null };
-  if (nums.length >= 2) return { lo: Math.min(nums[0], nums[1]), hi: Math.max(nums[0], nums[1]) };
-  return null;
-}
-function distOutside(v: number, r: any) { if (r.lo !== null && v < r.lo) return r.lo - v; if (r.hi !== null && v > r.hi) return v - r.hi; return 0; }
-const fmtD = (s: string) => { const d = new Date(s); return isNaN(d.getTime()) ? "" : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" }); };
-
-function mini(vals: number[]) {
-  if (vals.length < 2) return null;
-  const mn = Math.min(...vals), mx = Math.max(...vals), rg = mx - mn || 1;
-  return vals.map((v, i) => `${(i / (vals.length - 1)) * 58 + 1},${17 - ((v - mn) / rg) * 14}`).join(" ");
-}
 
 export default async function PatientView({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -37,47 +23,10 @@ export default async function PatientView({ params }: { params: Promise<{ id: st
   const { data: patient } = await sb.from("profiles").select("*").eq("id", id).single();
   const { data: records } = await sb.from("records").select("*").eq("patient_id", id).order("report_date", { ascending: false });
   const recs = records || [];
+  // eslint-disable-next-line react-hooks/purity -- async server component, evaluated once per request
   const age = patient?.dob ? Math.floor((Date.now() - new Date(patient.dob).getTime()) / 3.156e10) : null;
-  const bmi = patient?.height_cm && patient?.weight_kg ? (patient.weight_kg / Math.pow(patient.height_cm / 100, 2)).toFixed(1) : null;
 
-  const pts = recs.flatMap((r: any) => (r.data_points || []).map((d: any) => ({ ...d, date: r.report_date || r.created_at })));
-  const series: Record<string, any[]> = {};
-  for (const p of pts) {
-    if (!p.test) continue;
-    const raw = String(p.value ?? "").trim();
-    const bp = raw.match(/^(\d+\.?\d*)\s*\/\s*(\d+\.?\d*)$/);
-    if (bp) (series[p.test] ||= []).push({ date: p.date, sys: +bp[1], dia: +bp[2], dual: true, unit: p.unit, nr: p.normal_range });
-    else { const v = parseFloat(raw); if (isNaN(v)) continue; (series[p.test] ||= []).push({ date: p.date, v, unit: p.unit, nr: p.normal_range }); }
-  }
-  Object.values(series).forEach((a) => a.sort((x, y) => new Date(x.date).getTime() - new Date(y.date).getTime()));
-
-  const metrics = Object.entries(series).filter(([, a]) => a.length >= 2).map(([test, arr]) => {
-    const unit = arr[arr.length - 1].unit || "", last = arr[arr.length - 1];
-    if (arr[0].dual) {
-      const all = arr.flatMap((a) => [a.sys, a.dia]); let min = Math.min(...all), max = Math.max(...all); const pad = (max - min) * 0.18 || 6; min -= pad; max += pad;
-      let verdict = "normal", vColor = GREEN;
-      if (last.sys >= 140 || last.dia >= 90) { verdict = "high"; vColor = RED; } else if (last.sys >= 130 || last.dia >= 85) { verdict = "elevated"; vColor = AMBER; }
-      return { test, unit: "mmHg", dual: true, points: arr.map((a) => ({ label: fmtD(a.date), sys: a.sys, dia: a.dia })), min, max, latestLabel: `${last.sys}/${last.dia}`, verdict, vColor, count: arr.length, first: fmtD(arr[0].date), last: fmtD(last.date) };
-    }
-    const range = parseRange(last.nr); const vals = arr.map((a) => a.v); let min = Math.min(...vals), max = Math.max(...vals);
-    if (range?.lo != null) min = Math.min(min, range.lo); if (range?.hi != null) max = Math.max(max, range.hi);
-    const pad = (max - min) * 0.14 || 1; min -= pad; max += pad;
-    let verdict = "", vColor = MUTE;
-    if (range) { const d0 = distOutside(arr[0].v, range), d1 = distOutside(last.v, range);
-      if (d1 === 0 && d0 === 0) { verdict = "in range"; vColor = GREEN; } else if (d1 < d0) { verdict = "improving"; vColor = GREEN; } else if (d1 > d0) { verdict = "worsening"; vColor = RED; } else { verdict = d1 > 0 ? "out of range" : "stable"; vColor = d1 > 0 ? RED : MUTE; }
-    } else { const dl = last.v - arr[arr.length - 2].v; verdict = dl > 0 ? "rising" : dl < 0 ? "falling" : "stable"; }
-    return { test, unit, dual: false, lo: range?.lo ?? null, hi: range?.hi ?? null, points: arr.map((a) => ({ label: fmtD(a.date), v: a.v })), min, max, latestLabel: String(last.v), verdict, vColor, count: arr.length, first: fmtD(arr[0].date), last: fmtD(last.date) };
-  }).sort((a, b) => b.count - a.count);
-
-  const findSeries = (re: RegExp) => Object.entries(series).find(([t]) => re.test(t));
-  const vital = (re: RegExp, label: string) => {
-    const s = findSeries(re); if (!s) return null;
-    const arr = s[1]; const last = arr[arr.length - 1];
-    if (last.dual) return { label, value: `${last.sys}/${last.dia}`, unit: "mmHg", spark: mini(arr.map((a: any) => a.sys)), ok: last.sys < 130 && last.dia < 85 };
-    return { label, value: `${last.v}`, unit: last.unit || "", spark: mini(arr.map((a: any) => a.v)), ok: last.flag ? last.flag === "normal" : true };
-  };
-  const vitals = [vital(/heart rate|pulse/i, "Heart rate"), vital(/blood pressure|^bp\b/i, "Blood pressure"), vital(/spo2|oxygen|sao2/i, "SpO₂"), vital(/temp/i, "Temp")].filter(Boolean) as any[];
-  if (bmi) vitals.push({ label: "BMI", value: bmi, unit: "", spark: null, ok: +bmi >= 18.5 && +bmi <= 24.9 });
+  const { metrics, vitals, points: pts } = buildHealth(recs, patient);
 
   const primary = metrics[0];
   const insights: { tone: string; text: string }[] = [];
@@ -86,7 +35,7 @@ export default async function PatientView({ params }: { params: Promise<{ id: st
     else if (m.verdict === "elevated") insights.push({ tone: "amber", text: `${m.test} elevated (${m.latestLabel} ${m.unit}). Monitor.` });
     else if (m.verdict === "improving") insights.push({ tone: "green", text: `${m.test} improving across ${m.count} readings.` });
   });
-  const flaggedCount = pts.filter((p: any) => p.flag === "high" || p.flag === "low").length;
+  const flaggedCount = pts.filter((p) => p.flag === "high" || p.flag === "low").length;
   if (flaggedCount) insights.unshift({ tone: "amber", text: `${flaggedCount} reading${flaggedCount > 1 ? "s" : ""} outside normal range on record.` });
   const recentReports = recs.slice(0, 4);
 
@@ -131,9 +80,9 @@ export default async function PatientView({ params }: { params: Promise<{ id: st
                 <Link href={`/doctor/${id}/reports`} style={{ fontSize: 12, color: GREEN, fontWeight: 600, textDecoration: "none" }}>View all &rarr;</Link>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 10 }}>
-                {recentReports.map((r: any) => (
+                {recentReports.map((r: RecordRow) => (
                   <div key={r.id} style={{ background: BG, borderRadius: 10, padding: "10px 12px" }}>
-                    <p style={{ fontSize: 12, fontWeight: 600, color: GREEN, margin: 0 }}>{catLabel[r.category] || "Doc"}</p>
+                    <p style={{ fontSize: 12, fontWeight: 600, color: GREEN, margin: 0 }}>{catLabel[r.category || "other"] || "Doc"}</p>
                     <p style={{ fontSize: 11, color: MUTE, margin: "2px 0 0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.source || "—"}</p>
                     <p style={{ fontSize: 10.5, color: MUTE, margin: "3px 0 0" }}>{fmtD(r.report_date || r.created_at)}</p>
                   </div>

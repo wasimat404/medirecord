@@ -36,7 +36,7 @@ export default function Landing() {
       <section id="about" style={{ maxWidth: 820, margin: "0 auto", padding: "3rem 24px", textAlign: "center" }}>
         <h2 style={{ fontSize: 28, fontWeight: 600, marginBottom: 14 }}>Why MediRecord</h2>
         <p style={{ fontSize: 17, color: "var(--ink-soft)", lineHeight: 1.7 }}>
-          Patients under ongoing treatment end up with folders full of prescriptions, bills, and test reports — scattered, hard to read, often in a language they don't fully understand. Doctors get minutes to make sense of years of history. MediRecord turns that pile into a clear, searchable, translated record that patients own and doctors can trust.
+          Patients under ongoing treatment end up with folders full of prescriptions, bills, and test reports — scattered, hard to read, often in a language they don&apos;t fully understand. Doctors get minutes to make sense of years of history. MediRecord turns that pile into a clear, searchable, translated record that patients own and doctors can trust.
         </p>
       </section>
 
@@ -69,8 +69,8 @@ export default function Landing() {
       <section style={{ maxWidth: 1080, margin: "0 auto", padding: "3rem 24px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 18 }}>
         {[
           { q: "I finally understand my own reports. The Bengali summaries made my mother cry — she gets her own health now.", n: "Ananya, patient" },
-          { q: "Seeing three years of a patient's sugar trend in one glance changed how I consult. This saves real time.", n: "Dr. Rao, physician" },
-          { q: "No more carrying a fat folder to every appointment. It's all just there, organized.", n: "Imran, patient" },
+          { q: "Seeing three years of a patient&apos;s sugar trend in one glance changed how I consult. This saves real time.", n: "Dr. Rao, physician" },
+          { q: "No more carrying a fat folder to every appointment. It&apos;s all just there, organized.", n: "Imran, patient" },
         ].map((t) => (
           <div key={t.n} className="card" style={{ padding: "1.5rem" }}>
             <p style={{ fontSize: 15, lineHeight: 1.65, marginBottom: 14 }}>“{t.q}”</p>

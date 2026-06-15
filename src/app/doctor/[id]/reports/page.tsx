@@ -1,6 +1,7 @@
 import { redirect, notFound } from "next/navigation";
 import { supabaseServer } from "@/lib/supabaseServer";
 import DocSidebar from "../../DocSidebar";
+import type { RecordRow, DataPoint } from "@/lib/types";
 
 const GREEN = "#0B5C43", RED = "#A3422E", MUTE = "#75857D", LINE = "#E6ECE9", BG = "#F4F7F5";
 
@@ -11,7 +12,7 @@ const cat: Record<string, { label: string; bg: string; fg: string }> = {
   bill: { label: "Bill", bg: "#FAEEDA", fg: "#854F0B" },
   other: { label: "Document", bg: "#F1EFE8", fg: "#5F5E5A" },
 };
-const fmtD = (s: string) => { const d = new Date(s); return isNaN(d.getTime()) ? "Undated" : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }); };
+const fmtD = (s?: string) => { const d = new Date(s || ""); return isNaN(d.getTime()) ? "Undated" : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }); };
 const flagCol = (f?: string) => (f === "high" || f === "low" ? { bg: "#FCEBEB", fg: RED } : f === "normal" ? { bg: "#EAF7E1", fg: "#3B6D11" } : { bg: BG, fg: MUTE });
 
 export default async function ReportsPage({ params }: { params: Promise<{ id: string }> }) {
@@ -29,7 +30,7 @@ export default async function ReportsPage({ params }: { params: Promise<{ id: st
   const recs = records || [];
 
   const counts: Record<string, number> = {};
-  recs.forEach((r: any) => { const k = r.category || "other"; counts[k] = (counts[k] || 0) + 1; });
+  recs.forEach((r: RecordRow) => { const k = r.category || "other"; counts[k] = (counts[k] || 0) + 1; });
 
   return (
     <main style={{ minHeight: "100vh", background: BG, display: "flex", fontFamily: "ui-sans-serif, system-ui, sans-serif", color: "#16241E" }}>
@@ -58,8 +59,8 @@ export default async function ReportsPage({ params }: { params: Promise<{ id: st
         )}
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 16 }}>
-          {recs.map((r: any, i: number) => {
-            const c = cat[r.category] || cat.other;
+          {recs.map((r: RecordRow, i: number) => {
+            const c = cat[r.category || "other"] || cat.other;
             const dps = r.data_points || [];
             return (
               <div key={r.id} className="pcard r-in" style={{ background: "#fff", border: `1px solid ${LINE}`, borderRadius: 14, padding: "1.25rem 1.4rem", animationDelay: `${i * 0.04}s`, display: "flex", flexDirection: "column" }}>
@@ -74,7 +75,7 @@ export default async function ReportsPage({ params }: { params: Promise<{ id: st
 
                 {dps.length > 0 && (
                   <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginTop: "auto", paddingTop: 10, borderTop: `1px solid ${LINE}` }}>
-                    {dps.slice(0, 5).map((d: any, j: number) => {
+                    {dps.slice(0, 5).map((d: DataPoint, j: number) => {
                       const fc = flagCol(d.flag);
                       return <span key={j} style={{ fontSize: 11.5, fontWeight: 600, background: fc.bg, color: fc.fg, padding: "3px 9px", borderRadius: 8 }}>{d.test}: {d.value}{d.unit ? ` ${d.unit}` : ""}</span>;
                     })}

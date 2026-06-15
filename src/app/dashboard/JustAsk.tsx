@@ -60,7 +60,7 @@ export default function JustAsk() {
           <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: "#DCE9F7", borderRadius: 12, padding: "12px 14px" }}>
             <span style={{ flexShrink: 0, marginTop: 1, color: "#3B82C4" }}><SparkIcon color="#3B82C4" /></span>
             <div>
-              <p style={{ fontSize: 13, color: "#1F4368", margin: 0, lineHeight: 1.5, fontWeight: 600 }}>"{asked}"</p>
+              <p style={{ fontSize: 13, color: "#1F4368", margin: 0, lineHeight: 1.5, fontWeight: 600 }}>&quot;{asked}&quot;</p>
               <p style={{ fontSize: 12.5, color: "#2A4A6B", margin: "7px 0 0", lineHeight: 1.55 }}>
                 Smart answers are coming soon — your answer will appear here, drawn from your records with the source report highlighted so you can verify it.
               </p>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseServer } from "@/lib/supabaseServer";
 import { buildHealth, ageOf } from "@/lib/health";
+import type { RecordRow } from "@/lib/types";
 
 export async function POST(req: NextRequest) {
   try {
@@ -47,8 +48,8 @@ export async function POST(req: NextRequest) {
     const recs = records || [];
     const { metrics, vitals, insights, points } = buildHealth(recs, me);
 
-    const flagged = points.filter((p: any) => p.flag === "high" || p.flag === "low").length;
-    const recent = recs.slice(0, 6).map((r: any) => ({
+    const flagged = points.filter((p: { flag?: string }) => p.flag === "high" || p.flag === "low").length;
+    const recent = recs.slice(0, 6).map((r: RecordRow) => ({
       category: r.category || "other",
       source: r.source || null,
       date: r.report_date || r.created_at || null,
@@ -98,7 +99,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ ok: true, id: inserted?.id });
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error("share-summary error:", e);
     return NextResponse.json({ error: "Something went wrong." }, { status: 500 });
   }

@@ -77,7 +77,7 @@ export default function SmartUpload() {
         }}>
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke={GREEN} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: 6 }}><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /></svg>
         <p style={{ fontSize: 14.5, fontWeight: 600, margin: "0 0 3px", color: INK }}>Scan or drop a document</p>
-        <p style={{ fontSize: 12, color: MUTE, margin: 0 }}>PDF or photo · we'll read it for you · or tap to browse</p>
+        <p style={{ fontSize: 12, color: MUTE, margin: 0 }}>PDF or photo · we&apos;ll read it for you · or tap to browse</p>
         <input ref={inputRef} type="file" accept="image/*,application/pdf" style={{ display: "none" }}
           onChange={(e) => processFile(e.target.files?.[0])} />
       </div>
