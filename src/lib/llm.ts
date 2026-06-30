@@ -83,7 +83,8 @@ export async function generateContentBalanced(
 async function callGemini(textPrompt: string, inlineData?: { mimeType: string; data: string }): Promise<string> {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-  const payload: unknown[] = [textPrompt];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const payload: any[] = [textPrompt];
   if (inlineData) {
     payload.push({ inlineData });
   }

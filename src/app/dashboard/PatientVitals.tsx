@@ -1,10 +1,10 @@
 "use client";
 import { useState } from "react";
-import type { RecordRow } from "@/lib/types";
+import type { RecordRow, Profile } from "@/lib/types";
 
 const INK = "#22332C", MUTE = "#6B7C74", LINE = "#E5EFE9";
 
-export default function PatientVitals({ profile, records }: { profile: Record<string, unknown> | null, records: RecordRow[] }) {
+export default function PatientVitals({ profile, records }: { profile: Profile | null, records: RecordRow[] }) {
   const [expanded, setExpanded] = useState(false);
 
   // Calculate age
@@ -19,7 +19,13 @@ export default function PatientVitals({ profile, records }: { profile: Record<st
     const d = r.report_date ? new Date(r.report_date).toLocaleDateString("en-GB", { month: "short", day: "numeric" }) : "Unknown";
     (r.data_points || []).forEach(p => {
       if (p.flag === "high" || p.flag === "low") {
-        abnormal.push({ test: p.test, value: p.value, unit: p.unit, flag: p.flag, date: d });
+        abnormal.push({ 
+          test: p.test || "Test", 
+          value: String(p.value || ""), 
+          unit: p.unit, 
+          flag: p.flag || "", 
+          date: d 
+        });
       }
     });
   });

@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import type { RecordRow } from "@/lib/types";
+import type { RecordRow, Profile } from "@/lib/types";
 import LangToggle from "./LangToggle";
 import LogoutButton from "./LogoutButton";
 import CopyId from "./CopyId";
@@ -32,7 +32,7 @@ function NavItem({ active, onClick, label, icon }: { active: boolean, onClick: (
 export default function DashboardClient({
   records, profile, lang, latestSummary, heroHeadline, first, lastInit, patientLang
 }: {
-  records: RecordRow[], profile: Record<string, unknown>, lang: string, latestSummary: string | null, heroHeadline: string, first: string, lastInit: string, patientLang: string
+  records: RecordRow[], profile: Profile | null, lang: string, latestSummary: string | null, heroHeadline: string, first: string, lastInit: string, patientLang: string
 }) {
   const [activeTab, setActiveTab] = useState("overview");
   const [greet, setGreet] = useState("Good day");
