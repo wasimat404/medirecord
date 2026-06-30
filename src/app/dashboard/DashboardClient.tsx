@@ -37,10 +37,10 @@ export default function DashboardClient({
   const [activeTab, setActiveTab] = useState("overview");
   const [greet, setGreet] = useState("Good day");
 
-  // eslint-disable-next-line
   useEffect(() => {
     const hour = new Date().getHours();
-    setGreet(hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening");
+    const g = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+    setTimeout(() => setGreet(g), 0);
   }, []);
 
   return (
