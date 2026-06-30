@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { getModel } from "./gemini";
+import { generateContentBalanced } from "./llm";
 import { supabaseServer } from "./supabaseServer";
 
 // English names so Gemini knows the target. Add more as needed.
@@ -49,10 +49,10 @@ export async function translateText(text: string, lang: string): Promise<string>
 
   let translated = text;
   try {
-    const res = await getModel().generateContent(prompt);
-    translated = res.response.text().trim();
+    const rawText = await generateContentBalanced(prompt);
+    translated = rawText.trim();
   } catch (e) {
-    console.error("translateText failed:", e);
+    console.warn("translateText failed:", e);
     return text; // fail open -> show English rather than break the page
   }
 

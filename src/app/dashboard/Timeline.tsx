@@ -88,6 +88,12 @@ export default function Timeline({ records }: { records: RecordRow[] }) {
               const day = isNaN(d.getTime()) ? "" : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
               const pts = r.data_points || [];
               const isOpen = open === r.id;
+              
+              const abnormalCount = pts.filter((p: DataPoint) => p.flag === "high" || p.flag === "low").length;
+              const reaction = pts.length > 0 
+                ? (abnormalCount > 0 ? { label: "Requires Attention", bg: "#FCE9E7", fg: "#B23B2E" } : { label: "All Good", bg: "#E5F4E0", fg: "#3B6D11" })
+                : null;
+
               return (
                 <div key={r.id}
                   onClick={() => setOpen(isOpen ? null : r.id ?? null)}
@@ -103,14 +109,21 @@ export default function Timeline({ records }: { records: RecordRow[] }) {
                     </span>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10 }}>
-                        <p style={{ fontSize: 15.5, fontWeight: 600, margin: 0, color: "#1a2420", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{titleOf(r)}</p>
-                        <span style={{ fontSize: 11.5, color: "#9aa8a2", whiteSpace: "nowrap" }}>{day}</span>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                          <p style={{ fontSize: 18, fontWeight: 700, margin: 0, color: "#1a2420", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{titleOf(r)}</p>
+                          {reaction && (
+                            <span style={{ fontSize: 12, fontWeight: 800, background: reaction.bg, color: reaction.fg, padding: "4px 10px", borderRadius: 999, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                              {reaction.label}
+                            </span>
+                          )}
+                        </div>
+                        <span style={{ fontSize: 14, color: "#7A8A82", whiteSpace: "nowrap", fontWeight: 500 }}>{day}</span>
                       </div>
-                      <p style={{ fontSize: 12.5, color: "#7d8a85", margin: "2px 0 0" }}>{r.source || "Unknown source"}</p>
+                      <p style={{ fontSize: 15, color: "#4A5D54", margin: "4px 0 0", fontWeight: 500 }}>{r.source || "Unknown source"}</p>
 
-                      {pts.length > 0 && (
+                      {pts.length > 0 && !isOpen && (
                         <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginTop: 10 }}>
-                          {(isOpen ? pts : pts.slice(0, 3)).map((p: DataPoint, i: number) => {
+                          {pts.slice(0, 3).map((p: DataPoint, i: number) => {
                             const fs = flagStyle(p.flag);
                             return (
                               <span key={i} style={{ fontSize: 12, fontWeight: 600, background: fs.bg, color: fs.fg, padding: "4px 11px", borderRadius: 9 }}>
@@ -118,14 +131,34 @@ export default function Timeline({ records }: { records: RecordRow[] }) {
                               </span>
                             );
                           })}
-                          {!isOpen && pts.length > 3 && (
+                          {pts.length > 3 && (
                             <span style={{ fontSize: 12, fontWeight: 600, color: "#7d8a85", padding: "4px 8px" }}>+{pts.length - 3} more</span>
                           )}
                         </div>
                       )}
 
+                      {pts.length > 0 && isOpen && (
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 10, marginTop: 18 }}>
+                          {pts.map((p: DataPoint, i: number) => {
+                            const fs = flagStyle(p.flag);
+                            const bg = fs.bg === "#F1EFE8" ? "#FAFAF9" : fs.bg;
+                            const bdr = fs.bg === "#F1EFE8" ? "#EAE8E0" : fs.fg + "40";
+                            const c = fs.fg;
+                            return (
+                              <div key={i} style={{ background: fs.bg, borderRadius: 14, padding: "14px 16px", border: `1px solid ${fs.bg === '#F1EFE8' ? '#EAE8E0' : fs.fg + '25'}`, display: "flex", flexDirection: "column", gap: 4 }}>
+                                <div style={{ display: "flex", alignItems: "baseline", gap: 6, background: bg, border: `1px solid ${bdr}`, padding: "6px 12px", borderRadius: 8 }}>
+                                  <span style={{ fontSize: 14, fontWeight: 700, color: c }}>{p.test}:</span>
+                                  <span style={{ fontSize: 15, fontWeight: 800, color: c }}>{p.value} {p.unit}</span>
+                                </div>
+                                {p.normal_range && <div style={{ fontSize: 11.5, color: fs.fg, opacity: 0.75, marginTop: "auto", paddingTop: 8 }}>Range: {p.normal_range}</div>}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
                       {isOpen && (
-                        <p style={{ fontSize: 13.5, lineHeight: 1.65, color: "#465650", margin: "12px 0 0", borderTop: "1px solid #eef2f0", paddingTop: 12 }}>
+                        <p style={{ fontSize: 16, lineHeight: 1.65, color: "#465650", margin: "12px 0 0", borderTop: "1px solid #eef2f0", paddingTop: 14, fontWeight: 500 }}>
                           {r.summary_display ?? r.summary_en}
                         </p>
                       )}
