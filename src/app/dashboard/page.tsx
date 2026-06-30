@@ -2,16 +2,6 @@ import { redirect } from "next/navigation";
 import { supabaseServer } from "@/lib/supabaseServer";
 import type { RecordRow } from "@/lib/types";
 import { translateText } from "@/lib/translate";
-import LangToggle from "./LangToggle";
-import LogoutButton from "./LogoutButton";
-import CopyId from "./CopyId";
-import Timeline from "./Timeline";
-import JustAsk from "./JustAsk";
-import DocumentVault from "./DocumentVault";
-import HealthJourney from "./HealthJourney";
-import SmartUpload from "./SmartUpload";
-import TranslateBot from "./TranslateBot";
-import PatientVitals from "./PatientVitals";
 import DashboardClient from "./DashboardClient";
 
 export default async function Dashboard({ searchParams }: { searchParams: Promise<{ lang?: string }> }) {

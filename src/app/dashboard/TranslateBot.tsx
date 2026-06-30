@@ -1,5 +1,3 @@
-const GREEN = "#3DA672", GREEN_DEEP = "#2E9E63", TEAL = "#1FAE94", INK = "#22332C", MUTE = "#6B7C74", LINE = "#DCEAE3";
-
 const NAMES: Record<string, string> = { bn: "বাংলা", hi: "हिन्दी", ta: "தமிழ்", te: "తెలుగు", mr: "मराठी", gu: "ગુજરાતી", kn: "ಕನ್ನಡ", ml: "മലയാളം", pa: "ਪੰਜਾਬੀ", ur: "اردو", or: "ଓଡ଼ିଆ", as: "অসমীয়া", en: "English" };
 
 export default function TranslateBot({ headline, summary, lang }: { headline: string; summary: string | null; lang: string }) {

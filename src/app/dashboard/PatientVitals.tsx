@@ -4,7 +4,7 @@ import type { RecordRow } from "@/lib/types";
 
 const INK = "#22332C", MUTE = "#6B7C74", LINE = "#E5EFE9";
 
-export default function PatientVitals({ profile, records }: { profile: any, records: RecordRow[] }) {
+export default function PatientVitals({ profile, records }: { profile: Record<string, unknown> | null, records: RecordRow[] }) {
   const [expanded, setExpanded] = useState(false);
 
   // Calculate age

@@ -12,6 +12,7 @@ export async function POST(req: NextRequest) {
     
     return NextResponse.json({ short: short.trim().replace(/['"]/g, "") });
   } catch (err) {
-    return NextResponse.json({ short: "Lab Report" });
+    console.error("Shorten failed:", err);
+    return NextResponse.json({ error: "Failed to shorten text" }, { status: 500 });
   }
 }

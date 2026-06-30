@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/Loader";
 
-const GREEN = "#3DA672", GREEN_DEEP = "#2E9E63", MUTE = "#6B7C74", LINE = "#E5EFE9", INK = "#22332C";
+const GREEN = "#3DA672", GREEN_DEEP = "#2E9E63", MUTE = "#6B7C74", LINE = "#E5EFE9";
 
 const catLabel: Record<string, string> = {
   blood_test: "Lab report", imaging: "Imaging", prescription: "Prescription", bill: "Bill", other: "Document",

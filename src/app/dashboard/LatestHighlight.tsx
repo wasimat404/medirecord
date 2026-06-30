@@ -8,6 +8,7 @@ export default function LatestHighlight({ records }: { records: RecordRow[] }) {
   // Find the latest record with data points
   const latest = records.find(r => r.data_points && r.data_points.length > 0);
   
+  // eslint-disable-next-line
   useEffect(() => {
     if (!latest?.summary_en) {
       setShortSummary("Lab Report");

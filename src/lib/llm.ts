@@ -27,7 +27,7 @@ export async function generateContentBalanced(
     throw new Error("No LLM providers available (missing API keys).");
   }
 
-  let lastError: any;
+  let lastError: unknown;
 
   // Try each provider up to the total number of available providers
   for (let i = 0; i < providers.length; i++) {
@@ -54,8 +54,8 @@ export async function generateContentBalanced(
       currentIndex = (currentIndex + i + 1) % providers.length;
       return result;
 
-    } catch (error: any) {
-      if (provider === "gemini" && error.message?.includes("429")) {
+    } catch (error: unknown) {
+      if (provider === "gemini" && error instanceof Error && error.message?.includes("429")) {
         let waitSec = 15;
         const match = error.message.match(/Please retry in ([\d.]+)s/);
         if (match) waitSec = Math.ceil(parseFloat(match[1])) + 1; // buffer
@@ -67,7 +67,7 @@ export async function generateContentBalanced(
           const result = await callGemini(textPrompt, inlineData);
           currentIndex = (currentIndex + i + 1) % providers.length;
           return result;
-        } catch (retryErr) {
+        } catch {
           console.warn(`[LLM Balancer] ⚠️ Gemini retry failed. Falling back.`);
         }
       }
@@ -83,7 +83,7 @@ export async function generateContentBalanced(
 async function callGemini(textPrompt: string, inlineData?: { mimeType: string; data: string }): Promise<string> {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-  const payload: any[] = [textPrompt];
+  const payload: unknown[] = [textPrompt];
   if (inlineData) {
     payload.push({ inlineData });
   }
@@ -92,7 +92,7 @@ async function callGemini(textPrompt: string, inlineData?: { mimeType: string; d
 }
 
 async function callOpenAI(textPrompt: string, inlineData?: { mimeType: string; data: string }): Promise<string> {
-  const messages: any[] = [];
+  const messages: Record<string, unknown>[] = [];
   
   if (inlineData) {
     messages.push({
@@ -126,7 +126,7 @@ async function callOpenAI(textPrompt: string, inlineData?: { mimeType: string; d
 
 
 async function callGroq(textPrompt: string, inlineData?: { mimeType: string; data: string }): Promise<string> {
-  const messages: any[] = [];
+  const messages: Record<string, unknown>[] = [];
   
   if (inlineData) {
     messages.push({

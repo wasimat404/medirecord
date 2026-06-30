@@ -13,7 +13,7 @@ import TranslateBot from "./TranslateBot";
 import PatientVitals from "./PatientVitals";
 import LatestHighlight from "./LatestHighlight";
 
-function NavItem({ active, onClick, label, icon }: any) {
+function NavItem({ active, onClick, label, icon }: { active: boolean, onClick: () => void, label: string, icon: string }) {
   const bg = active ? "#DCF1E4" : "transparent";
   const color = active ? "#1FAE94" : "#6B7C74";
   return (
@@ -32,11 +32,12 @@ function NavItem({ active, onClick, label, icon }: any) {
 export default function DashboardClient({
   records, profile, lang, latestSummary, heroHeadline, first, lastInit, patientLang
 }: {
-  records: RecordRow[], profile: any, lang: string, latestSummary: string | null, heroHeadline: string, first: string, lastInit: string, patientLang: string
+  records: RecordRow[], profile: Record<string, unknown>, lang: string, latestSummary: string | null, heroHeadline: string, first: string, lastInit: string, patientLang: string
 }) {
   const [activeTab, setActiveTab] = useState("overview");
   const [greet, setGreet] = useState("Good day");
 
+  // eslint-disable-next-line
   useEffect(() => {
     const hour = new Date().getHours();
     setGreet(hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening");
