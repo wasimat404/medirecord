@@ -1,49 +1,54 @@
-const GREEN = "#3DA672", GREEN_DEEP = "#2E9E63", TEAL = "#1FAE94", INK = "#22332C", MUTE = "#6B7C74", LINE = "#DCEAE3";
-
 const NAMES: Record<string, string> = { bn: "বাংলা", hi: "हिन्दी", ta: "தமிழ்", te: "తెలుగు", mr: "मराठी", gu: "ગુજરાતી", kn: "ಕನ್ನಡ", ml: "മലയാളം", pa: "ਪੰਜਾਬੀ", ur: "اردو", or: "ଓଡ଼ିଆ", as: "অসমীয়া", en: "English" };
 
 export default function TranslateBot({ headline, summary, lang }: { headline: string; summary: string | null; lang: string }) {
   const langName = NAMES[lang] || lang.toUpperCase();
 
   return (
-    <div style={{ background: "linear-gradient(135deg,#EAF7F0 0%,#DCF1E7 100%)", border: `1px solid ${LINE}`, borderRadius: 16, padding: "20px 22px", flex: 1, display: "flex", flexDirection: "column", minHeight: 210 }}>
+    <div style={{ background: "linear-gradient(145deg, #0D2B22 0%, #153E31 100%)", border: `1px solid rgba(61,166,114,0.3)`, borderRadius: 26, padding: "24px 26px", flex: 1, display: "flex", flexDirection: "column", minHeight: 210, position: "relative", overflow: "hidden", boxShadow: "0 20px 40px rgba(13, 43, 34, 0.15)" }}>
       <style>{`
         @keyframes mbFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
         @keyframes mbPulse{0%,100%{opacity:1}50%{opacity:.4}}
         @keyframes mbBlink{0%,92%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
         @keyframes mbBeat{0%,100%{transform:scale(1)}15%{transform:scale(1.18)}30%{transform:scale(1)}45%{transform:scale(1.12)}60%{transform:scale(1)}}
-        .mb-bot{animation:mbFloat 3.2s ease-in-out infinite}
+        @keyframes aiGlow{0%{transform:scale(1);opacity:0.4}100%{transform:scale(1.4);opacity:0.6}}
+        .mb-bot{animation:mbFloat 3.5s ease-in-out infinite; filter: drop-shadow(0 10px 15px rgba(61,166,114,0.2))}
         .mb-dot{animation:mbPulse 1.6s ease-in-out infinite}
         .mb-eye{animation:mbBlink 4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
         .mb-heart{animation:mbBeat 2.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
-        @media (prefers-reduced-motion:reduce){.mb-bot,.mb-dot,.mb-eye,.mb-heart{animation:none}}
+        .ai-bg { position: absolute; top: -50px; left: -50px; width: 250px; height: 250px; background: radial-gradient(circle, rgba(61,166,114,0.25) 0%, transparent 60%); animation: aiGlow 4s infinite alternate; pointer-events: none; }
+        .glass-bubble { background: rgba(255, 255, 255, 0.06); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; position: relative; }
+        .glass-bubble::after { content: ''; position: absolute; left: -8px; top: 28px; width: 0; height: 0; border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-right: 8px solid rgba(255, 255, 255, 0.08); }
+        @media (prefers-reduced-motion:reduce){.mb-bot,.mb-dot,.mb-eye,.mb-heart,.ai-bg{animation:none}}
       `}</style>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-        <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: 1, color: MUTE, textTransform: "uppercase" }}>Your report, explained</span>
-        <span style={{ fontSize: 11, fontWeight: 600, color: GREEN_DEEP, background: "#fff", borderRadius: 999, padding: "2px 10px" }}>in {langName}</span>
+      <div className="ai-bg" />
+
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20, position: "relative", zIndex: 1 }}>
+        <p style={{ fontSize: 13, fontWeight: 800, color: "#B8C9C2", letterSpacing: 1.5, margin: "0 0 10px", textTransform: "uppercase" }}>
+          🤖 AI MEDICAL ASSISTANT
+        </p>
+        <span style={{ fontSize: 11, fontWeight: 700, color: "#0D2B22", background: "#8CE6BD", borderRadius: 999, padding: "3px 12px", boxShadow: "0 0 10px rgba(140,230,189,0.3)" }}>in {langName}</span>
       </div>
 
-      <div style={{ display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap", flex: 1 }}>
-        <svg className="mb-bot" width="116" height="130" viewBox="0 0 140 150" style={{ flexShrink: 0 }} role="img" aria-label="Friendly medical assistant robot">
-          <line x1="70" y1="32" x2="70" y2="16" stroke={GREEN} strokeWidth="3" strokeLinecap="round" />
-          <circle className="mb-dot" cx="70" cy="13" r="5" fill={TEAL} />
-          <rect x="28" y="88" width="11" height="26" rx="5.5" fill="#fff" stroke={GREEN} strokeWidth="2.5" />
-          <rect x="101" y="88" width="11" height="26" rx="5.5" fill="#fff" stroke={GREEN} strokeWidth="2.5" />
-          <rect x="63" y="74" width="14" height="9" fill={GREEN} />
-          <rect x="40" y="32" width="60" height="46" rx="15" fill="#fff" stroke={GREEN} strokeWidth="2.5" />
-          <rect x="48" y="41" width="44" height="27" rx="10" fill="#14463A" />
-          <rect className="mb-eye" x="57" y="49" width="8" height="11" rx="4" fill="#6FE3C4" />
-          <rect className="mb-eye" x="75" y="49" width="8" height="11" rx="4" fill="#6FE3C4" />
-          <rect x="44" y="82" width="52" height="46" rx="15" fill="#DCF1E4" stroke={GREEN} strokeWidth="2.5" />
-          <path className="mb-heart" d="M70 114 C66 110 60 106 60 101 C60 97 64 95 67 97 C68.5 98 70 100 70 100 C70 100 71.5 98 73 97 C76 95 80 97 80 101 C80 106 74 110 70 114 Z" fill={GREEN} />
+      <div style={{ display: "flex", gap: 22, alignItems: "center", flexWrap: "wrap", flex: 1, position: "relative", zIndex: 1 }}>
+        <svg className="mb-bot" width="124" height="138" viewBox="0 0 140 150" style={{ flexShrink: 0 }} role="img" aria-label="Friendly medical assistant robot">
+          <line x1="70" y1="32" x2="70" y2="16" stroke="#8CE6BD" strokeWidth="3.5" strokeLinecap="round" />
+          <circle className="mb-dot" cx="70" cy="12" r="6" fill="#4BECD6" />
+          <rect x="26" y="88" width="12" height="28" rx="6" fill="rgba(255,255,255,0.1)" stroke="#8CE6BD" strokeWidth="2.5" />
+          <rect x="102" y="88" width="12" height="28" rx="6" fill="rgba(255,255,255,0.1)" stroke="#8CE6BD" strokeWidth="2.5" />
+          <rect x="63" y="74" width="14" height="10" fill="#8CE6BD" />
+          <rect x="40" y="32" width="60" height="46" rx="16" fill="rgba(255,255,255,0.05)" stroke="#8CE6BD" strokeWidth="2.5" />
+          <rect x="48" y="41" width="44" height="27" rx="10" fill="#081A14" />
+          <rect className="mb-eye" x="56" y="49" width="9" height="11" rx="4.5" fill="#4BECD6" />
+          <rect className="mb-eye" x="75" y="49" width="9" height="11" rx="4.5" fill="#4BECD6" />
+          <rect x="42" y="82" width="56" height="50" rx="18" fill="rgba(61,166,114,0.15)" stroke="#8CE6BD" strokeWidth="2.5" />
+          <path className="mb-heart" d="M70 116 C66 112 60 108 60 103 C60 99 64 97 67 99 C68.5 100 70 102 70 102 C70 102 71.5 100 73 99 C76 97 80 99 80 103 C80 108 74 112 70 116 Z" fill="#FF5C77" />
         </svg>
 
-        <div style={{ flex: 1, minWidth: 190, background: "#fff", borderRadius: 14, padding: "15px 17px", position: "relative" }}>
-          <span style={{ position: "absolute", left: -7, top: 26, width: 0, height: 0, borderTop: "7px solid transparent", borderBottom: "7px solid transparent", borderRight: "8px solid #fff" }} />
-          <h3 dir="auto" style={{ fontSize: 17, fontWeight: 600, margin: 0, color: INK, fontFamily: "Georgia, serif", lineHeight: 1.4 }}>{headline}</h3>
-          <p dir="auto" style={{ fontSize: 13.5, color: "#3D4B45", margin: "9px 0 0", lineHeight: 1.6 }}>
-            {summary || `Upload a report and I'll explain it to you here in ${langName}.`}
+        <div className="glass-bubble" style={{ flex: 1, minWidth: 200, padding: "18px 22px" }}>
+          <h3 dir="auto" style={{ fontSize: 18, fontWeight: 700, margin: 0, color: "#ffffff", lineHeight: 1.4, letterSpacing: 0.3 }}>{headline}</h3>
+          <p style={{ fontSize: 18, color: "#E5EFE9", margin: 0, lineHeight: 1.6, fontWeight: 500 }}>
+            {summary || (lang === "en" ? "Upload a medical record and I'll break it down into plain English for you." : "Upload a medical record and I will translate the complex medical terms for you.")}
           </p>
         </div>
       </div>

@@ -1,0 +1,12 @@
+
+> medirecord@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.9 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.31.41.162:3000
+- Environments: .env.local
+✓ Ready in 372ms
+
+ GET /dashboard 200 in 2.3s (next.js: 191ms, application-code: 2.1s)
+ GET /service-worker.js 404 in 54ms (next.js: 17ms, application-code: 37ms)

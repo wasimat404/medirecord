@@ -18,18 +18,26 @@ export default function DocumentVault({ records }: { records: RecordRow[] }) {
   const recs = records || [];
   return (
     <div style={{ marginBottom: 18 }}>
-      <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: 1.2, color: MUTE, textTransform: "uppercase", margin: "0 0 12px" }}>Your document vault</p>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12 }}>
+      <h3 style={{ fontSize: 16, fontWeight: 800, letterSpacing: 1.2, color: "#2E9E63", textTransform: "uppercase", margin: "0 0 16px" }}>🗄️ Document Vault</h3>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 16 }}>
         {cats.map((c) => {
           const count = recs.filter((r: RecordRow) => c.match(r.category || "")).length;
           return (
-            <div key={c.key} className="pcard" style={{ background: c.tint, borderRadius: 18, padding: "18px 16px", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 11 }}>
-              <span style={{ width: 46, height: 46, borderRadius: 13, background: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,.04)" }}>
+            <div key={c.key} className="pcard" style={{ 
+              background: `linear-gradient(135deg, #ffffff 40%, ${c.tint}30 100%)`, 
+              border: `1px solid ${c.tint}`, 
+              borderRadius: 24, padding: "22px 20px", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 16,
+              boxShadow: "0 8px 24px rgba(0,0,0,0.02)", position: "relative", overflow: "hidden"
+            }}>
+              <div style={{ position: "absolute", right: -15, top: -15, opacity: 0.05, transform: "scale(3)" }}>
+                 <Icon kind={c.icon} color={c.color} />
+              </div>
+              <span style={{ width: 50, height: 50, borderRadius: 16, background: c.tint, display: "inline-flex", alignItems: "center", justifyContent: "center", boxShadow: `0 4px 12px ${c.color}15` }}>
                 <Icon kind={c.icon} color={c.color} />
               </span>
               <div>
-                <p style={{ fontSize: 26, fontWeight: 600, margin: 0, color: c.color, fontFamily: "Georgia, serif", lineHeight: 1 }}>{count}</p>
-                <p style={{ fontSize: 13, fontWeight: 600, margin: "3px 0 0", color: INK }}>{c.label}</p>
+                <p style={{ fontSize: 36, fontWeight: 800, margin: 0, color: INK, lineHeight: 1 }}>{count}</p>
+                <p style={{ fontSize: 16, fontWeight: 700, margin: "4px 0 0", color: MUTE, textTransform: "uppercase", letterSpacing: 0.5 }}>{c.label}</p>
               </div>
             </div>
           );

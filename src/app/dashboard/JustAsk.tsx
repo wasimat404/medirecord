@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { CSSProperties } from "react";
+import Loader from "@/components/Loader";
 
 const GREEN = "#3DA672", GREEN_DEEP = "#2E9E63", MUTE = "#6B7C74", LINE = "#DCEAE3", INK = "#22332C";
 
@@ -21,13 +22,20 @@ const SparkIcon = ({ color = GREEN }: { color?: string }) => (
 export default function JustAsk() {
   const [q, setQ] = useState("");
   const [asked, setAsked] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   function ask(text?: string) {
     const query = (text ?? q).trim();
     if (!query) return;
-    setAsked(query);
     setQ("");
-    // AI backend lands in the next pillar; this previews where the answer renders.
+    setAsked(null);
+    setLoading(true);
+    
+    // Fake AI latency to show off the cool loader
+    setTimeout(() => {
+      setLoading(false);
+      setAsked(query);
+    }, 2800);
   }
 
   return (
@@ -54,7 +62,13 @@ export default function JustAsk() {
         ))}
       </div>
 
-      {asked && (
+      {loading && (
+        <div style={{ marginTop: 24, padding: "20px 14px", display: "flex", justifyContent: "center" }}>
+          <Loader size={32} color="#3B82C4" text="AI is analyzing your records..." />
+        </div>
+      )}
+
+      {asked && !loading && (
         <div style={{ marginTop: 15, borderTop: `1px solid #EEF4F1`, paddingTop: 13 }}>
           <p style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: .8, color: MUTE, textTransform: "uppercase", margin: "0 0 9px" }}>Recent answer</p>
           <div style={{ display: "flex", gap: 10, alignItems: "flex-start", background: "#DCE9F7", borderRadius: 12, padding: "12px 14px" }}>
