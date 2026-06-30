@@ -16,7 +16,7 @@ export default function LatestHighlight({ records }: { records: RecordRow[] }) {
     const cacheKey = `shortName_${latest.id}`;
     const cached = localStorage.getItem(cacheKey);
     if (cached) {
-      setShortSummary(cached);
+      setTimeout(() => setShortSummary(cached), 0);
       return;
     }
     fetch("/api/shorten", { method: "POST", body: JSON.stringify({ text: latest.summary_en }) })
