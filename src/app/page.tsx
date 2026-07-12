@@ -31,7 +31,7 @@ export default function Landing() {
         </p>
         <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
           <Link href="/signup" className="btn" style={{ textDecoration: "none", fontSize: 16, padding: "14px 32px", borderRadius: 14, boxShadow: "0 8px 24px rgba(29, 158, 117, 0.25)" }}>Get started free</Link>
-          <a href="#about" style={{ textDecoration: "none", color: "var(--ink)", background: "rgba(255, 255, 255, 0.5)", backdropFilter: "blur(10px)", border: "1px solid var(--line)", borderRadius: 14, padding: "14px 32px", fontSize: 16, fontWeight: 500, transition: "background 0.2s" }} onMouseOver={(e) => e.currentTarget.style.background = "var(--surface)"} onMouseOut={(e) => e.currentTarget.style.background = "rgba(255, 255, 255, 0.5)"}>Learn more</a>
+          <a href="#about" className="btn-outline" style={{ textDecoration: "none", backdropFilter: "blur(10px)", border: "1px solid var(--line)", borderRadius: 14, padding: "14px 32px", fontSize: 16, fontWeight: 500, transition: "background 0.2s" }}>Learn more</a>
         </div>
       </section>
 
