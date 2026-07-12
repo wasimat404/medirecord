@@ -49,6 +49,14 @@ body {
 .btn:hover { background: var(--teal-dark); }
 .btn:disabled { opacity: .5; cursor: default; }
 
+.btn-outline {
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.5);
+}
+.btn-outline:hover {
+  background: var(--surface);
+}
+
 .field {
   width: 100%;
   padding: 11px 12px;
@@ -62,3 +70,27 @@ body {
 .field:focus { border-color: var(--teal); }
 
 .label { font-size: 13px; color: var(--ink-soft); display: block; margin-bottom: 5px; }
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.marquee-container {
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+  position: relative;
+  display: flex;
+}
+
+.marquee-content {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  animation: marquee 20s linear infinite;
+}
+
+.marquee-container:hover .marquee-content {
+  animation-play-state: paused;
+}
