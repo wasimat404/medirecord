@@ -1,26 +1,67 @@
 import Link from "next/link";
 import Image from "next/image";
 
-// Placeholder SVG icons for Tech Partners
-const TechLogo = ({ name }: { name: string }) => {
+const techLogos = [
+  { name: 'Google', url: 'https://cdn.simpleicons.org/google' },
+  { name: 'Microsoft', url: 'https://cdn.simpleicons.org/microsoft' },
+  { name: 'X', url: 'https://cdn.simpleicons.org/x' },
+  { name: 'ChatGPT', url: 'https://cdn.simpleicons.org/chatgpt' },
+  { name: 'Adobe', url: 'https://cdn.simpleicons.org/adobe' },
+  { name: 'OpenAI', url: 'https://cdn.simpleicons.org/openai' },
+  { name: 'AWS', url: 'https://cdn.simpleicons.org/amazonaws' },
+  { name: 'NVIDIA', url: 'https://cdn.simpleicons.org/nvidia' },
+  { name: 'Meta', url: 'https://cdn.simpleicons.org/meta' },
+  // Duplicate for seamless marquee
+  { name: 'Google', url: 'https://cdn.simpleicons.org/google' },
+  { name: 'Microsoft', url: 'https://cdn.simpleicons.org/microsoft' },
+  { name: 'X', url: 'https://cdn.simpleicons.org/x' },
+  { name: 'ChatGPT', url: 'https://cdn.simpleicons.org/chatgpt' },
+  { name: 'Adobe', url: 'https://cdn.simpleicons.org/adobe' },
+  { name: 'OpenAI', url: 'https://cdn.simpleicons.org/openai' },
+  { name: 'AWS', url: 'https://cdn.simpleicons.org/amazonaws' },
+  { name: 'NVIDIA', url: 'https://cdn.simpleicons.org/nvidia' },
+  { name: 'Meta', url: 'https://cdn.simpleicons.org/meta' },
+];
+
+const hospitalLogos = [
+  { name: 'Apollo Hospitals', url: 'https://logo.clearbit.com/apollohospitals.com' },
+  { name: 'Fortis Healthcare', url: 'https://logo.clearbit.com/fortishealthcare.com' },
+  { name: 'Max Healthcare', url: 'https://logo.clearbit.com/maxhealthcare.in' },
+  { name: 'AIIMS', url: 'https://logo.clearbit.com/aiims.edu' },
+  { name: 'Mount Sinai', url: 'https://logo.clearbit.com/mountsinai.org' },
+  { name: 'Mayo Clinic', url: 'https://logo.clearbit.com/mayoclinic.org' },
+  { name: 'Cleveland Clinic', url: 'https://logo.clearbit.com/my.clevelandclinic.org' },
+  { name: 'Johns Hopkins', url: 'https://logo.clearbit.com/hopkinsmedicine.org' },
+  { name: 'Mass General', url: 'https://logo.clearbit.com/massgeneral.org' },
+  // Duplicate for seamless marquee
+  { name: 'Apollo Hospitals', url: 'https://logo.clearbit.com/apollohospitals.com' },
+  { name: 'Fortis Healthcare', url: 'https://logo.clearbit.com/fortishealthcare.com' },
+  { name: 'Max Healthcare', url: 'https://logo.clearbit.com/maxhealthcare.in' },
+  { name: 'AIIMS', url: 'https://logo.clearbit.com/aiims.edu' },
+  { name: 'Mount Sinai', url: 'https://logo.clearbit.com/mountsinai.org' },
+  { name: 'Mayo Clinic', url: 'https://logo.clearbit.com/mayoclinic.org' },
+  { name: 'Cleveland Clinic', url: 'https://logo.clearbit.com/my.clevelandclinic.org' },
+  { name: 'Johns Hopkins', url: 'https://logo.clearbit.com/hopkinsmedicine.org' },
+  { name: 'Mass General', url: 'https://logo.clearbit.com/massgeneral.org' }
+];
+
+const TechLogo = ({ name, url }: { name: string, url: string }) => {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "0 50px" }}>
-      <div style={{ width: 40, height: 40, borderRadius: 8, background: "var(--teal-tint)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--teal-dark)", fontWeight: 800, fontSize: 20 }}>
-        {name.charAt(0)}
-      </div>
+      <img src={url} alt={`${name} logo`} width="36" height="36" />
       <span style={{ fontSize: 32, fontWeight: 800, color: "var(--ink)", opacity: 0.8, letterSpacing: "-1px" }}>{name}</span>
     </div>
   );
 };
 
-// Placeholder SVG icons for Hospitals
-const HospitalLogo = ({ name }: { name: string }) => {
+const HospitalLogo = ({ name, url }: { name: string, url: string }) => {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "0 50px" }}>
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-        <path d="M12 8v8M8 12h8" />
-      </svg>
+    <div style={{ display: "flex", alignItems: "center", gap: 16, margin: "0 50px" }}>
+      <div style={{ width: 48, height: 48, borderRadius: 12, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", boxShadow: "0 4px 12px rgba(0,0,0,0.05)", padding: 4 }}>
+        {/* Using standard img tag so we don't need to configure Next.js domains for remote images */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={url} alt={`${name} logo`} style={{ width: "100%", height: "100%", objectFit: "contain" }} onError={(e) => { e.currentTarget.style.display = 'none' }} />
+      </div>
       <span style={{ fontSize: 28, fontWeight: 700, color: "var(--ink-soft)", letterSpacing: "-0.5px" }}>{name}</span>
     </div>
   );
@@ -74,8 +115,8 @@ export default function Landing() {
         <p style={{ textAlign: "center", fontSize: 14, color: "var(--ink-soft)", textTransform: "uppercase", letterSpacing: 2, fontWeight: 700, marginBottom: 30 }}>Technology & AI Partners</p>
         <div className="marquee-container" style={{ padding: "30px 0", background: "linear-gradient(to right, transparent, rgba(29, 158, 117, 0.04) 20%, rgba(29, 158, 117, 0.04) 80%, transparent)" }}>
           <div className="marquee-content" style={{ animationDuration: "35s" }}>
-            {["Google", "Microsoft", "X", "ChatGPT", "Adobe", "OpenAI", "AWS", "NVIDIA", "Meta", "Google", "Microsoft", "X", "ChatGPT", "Adobe", "OpenAI", "AWS", "NVIDIA", "Meta"].map((partner, i) => (
-              <TechLogo key={`${partner}-${i}`} name={partner} />
+            {techLogos.map((partner, i) => (
+              <TechLogo key={`${partner.name}-${i}`} name={partner.name} url={partner.url} />
             ))}
           </div>
         </div>
@@ -120,8 +161,8 @@ export default function Landing() {
         <p style={{ textAlign: "center", fontSize: 14, color: "var(--ink-soft)", textTransform: "uppercase", letterSpacing: 2, fontWeight: 700, marginBottom: 30 }}>Trusted by world-class clinics & hospitals</p>
         <div className="marquee-container" style={{ padding: "20px 0" }}>
           <div className="marquee-content" style={{ animationDuration: "45s", animationDirection: "reverse" }}>
-            {["Apollo Hospitals", "Fortis Healthcare", "Max Super Speciality", "AIIMS", "Mount Sinai", "Mayo Clinic", "Cleveland Clinic", "Johns Hopkins", "Mass General", "Apollo Hospitals", "Fortis Healthcare", "Max Super Speciality", "AIIMS", "Mount Sinai", "Mayo Clinic", "Cleveland Clinic", "Johns Hopkins", "Mass General"].map((hospital, i) => (
-              <HospitalLogo key={`${hospital}-${i}`} name={hospital} />
+            {hospitalLogos.map((hospital, i) => (
+              <HospitalLogo key={`${hospital.name}-${i}`} name={hospital.name} url={hospital.url} />
             ))}
           </div>
         </div>
